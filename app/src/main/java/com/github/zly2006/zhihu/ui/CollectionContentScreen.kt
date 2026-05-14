@@ -21,10 +21,8 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -86,7 +84,6 @@ data class CollectionContentScreenTestOverrides(
 @Composable
 fun CollectionContentScreen(
     collectionId: String,
-    innerPadding: PaddingValues,
     testOverrides: CollectionContentScreenTestOverrides? = null,
 ) {
     val navigator = LocalNavigator.current
@@ -125,7 +122,7 @@ fun CollectionContentScreen(
     }
 
     Scaffold(
-        modifier = Modifier.padding(innerPadding),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
@@ -168,7 +165,6 @@ fun CollectionContentScreen(
                         }
                     }
                 },
-                windowInsets = WindowInsets(0),
             )
         },
     ) { innerPadding ->

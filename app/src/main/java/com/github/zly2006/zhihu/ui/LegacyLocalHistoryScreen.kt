@@ -24,17 +24,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.zly2006.zhihu.navigation.LocalNavigator
 import com.github.zly2006.zhihu.ui.components.FeedCard
 import com.github.zly2006.zhihu.ui.components.FeedPullToRefresh
 import com.github.zly2006.zhihu.ui.components.PaginatedList
 import com.github.zly2006.zhihu.viewmodel.feed.HistoryViewModel
 
 @Composable
-fun HistoryScreen(
+fun LegacyLocalHistoryScreen(
     innerPadding: PaddingValues,
 ) {
-    val navigator = LocalNavigator.current
     val viewModel: HistoryViewModel = viewModel()
     val context = LocalContext.current
 

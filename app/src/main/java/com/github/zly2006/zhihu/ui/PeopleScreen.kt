@@ -25,9 +25,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -585,7 +583,6 @@ private fun PersonViewModel.toUiState(): PeopleScreenUiState = PeopleScreenUiSta
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PeopleScreen(
-    innerPadding: PaddingValues,
     person: Person,
     testOverrides: PeopleScreenTestOverrides? = null,
 ) {
@@ -665,7 +662,7 @@ fun PeopleScreen(
         modifier = Modifier
             .testTag(PEOPLE_SCREEN_ROOT_TAG)
             .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .padding(innerPadding),
+            .fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
@@ -740,7 +737,6 @@ fun PeopleScreen(
                 ),
                 scrollBehavior = scrollBehavior,
                 expandedHeight = 200.dp,
-                windowInsets = WindowInsets(0.dp),
             )
         },
     ) { innerPadding ->

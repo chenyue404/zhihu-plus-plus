@@ -434,13 +434,13 @@ fun ZhihuMain(modifier: Modifier = Modifier, navController: NavHostController) {
                     )
                 }
                 composable<Daily> {
-                    DailyScreen(innerPadding)
+                    DailyScreen()
                 }
                 composable<History> {
-                    HistoryScreen(innerPadding)
+                    LegacyLocalHistoryScreen(innerPadding)
                 }
                 composable<OnlineHistory> {
-                    OnlineHistoryScreen(innerPadding)
+                    OnlineHistoryScreen()
                 }
                 composable<Account> {
                     AccountSettingScreen(innerPadding)
@@ -451,61 +451,57 @@ fun ZhihuMain(modifier: Modifier = Modifier, navController: NavHostController) {
                 }
                 composable<Collections> {
                     val data: Collections = it.toRoute()
-                    CollectionScreen(data.userToken, innerPadding)
+                    CollectionScreen(data.userToken)
                 }
                 composable<CollectionContent> {
                     val content: CollectionContent = it.toRoute()
-                    CollectionContentScreen(content.collectionId, innerPadding)
+                    CollectionContentScreen(content.collectionId)
                 }
                 composable<Person> {
                     val person: Person = it.toRoute()
-                    PeopleScreen(innerPadding, person)
+                    PeopleScreen(person)
                 }
                 composable<Pin> {
                     val pin = it.toRoute<Pin>()
-                    PinScreen(innerPadding, pin)
+                    PinScreen(pin)
                 }
                 composable<Account.RecommendSettings.Blocklist> {
-                    BlocklistSettingsScreen(innerPadding)
+                    BlocklistSettingsScreen()
                 }
                 composable<Account.RecommendSettings.BlockedFeedHistory> {
                     BlockedFeedHistoryScreen()
                 }
                 composable<Notification> {
-                    NotificationScreen(innerPadding)
+                    NotificationScreen()
                 }
                 composable<Notification.NotificationSettings> {
-                    NotificationSettingsScreen(innerPadding)
+                    NotificationSettingsScreen()
                 }
                 composable<SentenceSimilarityTest> {
-                    SentenceSimilarityTestScreen(innerPadding)
+                    SentenceSimilarityTestScreen()
                 }
                 composable<Account.AppearanceSettings> {
                     val args = it.toRoute<Account.AppearanceSettings>()
                     AppearanceSettingsScreen(
-                        innerPadding,
                         setting = args.setting,
                         onExit = reloadBottomBarPreferences,
                     )
                 }
                 composable<Account.RecommendSettings> {
                     val args = it.toRoute<Account.RecommendSettings>()
-                    ContentFilterSettingsScreen(
-                        innerPadding,
-                        setting = args.setting,
-                    )
+                    ContentFilterSettingsScreen(args.setting)
                 }
                 composable<Account.SystemAndUpdateSettings> {
-                    SystemAndUpdateSettingsScreen(innerPadding)
+                    SystemAndUpdateSettingsScreen()
                 }
                 composable<Account.OpenSourceLicenses> {
                     OpenSourceLicensesScreen()
                 }
                 composable<Account.DeveloperSettings> {
-                    DeveloperSettingsScreen(innerPadding)
+                    DeveloperSettingsScreen()
                 }
                 composable<Account.DeveloperSettings.ColorScheme> {
-                    ColorSchemeScreen(innerPadding)
+                    ColorSchemeScreen()
                 }
             }
         }

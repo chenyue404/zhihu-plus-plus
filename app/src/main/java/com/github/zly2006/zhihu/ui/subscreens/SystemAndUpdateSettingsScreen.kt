@@ -22,7 +22,6 @@ import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -94,9 +93,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SystemAndUpdateSettingsScreen(
-    innerPadding: PaddingValues,
-) {
+fun SystemAndUpdateSettingsScreen() {
     val context = LocalContext.current
     val navigator = LocalNavigator.current
     val preferences = remember {
