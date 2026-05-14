@@ -11,7 +11,7 @@ Use this skill for the Zhihu-local Markdown fork release workflow.
 
 Required:
 
-- Target version, for example `0.0.1-alpha.4`
+- Target version, for example `0.0.1-alpha.N` (check it in gradle.properties and compute the next N)
 - Fork checkout: `/Users/zhaoliyan/IdeaProjects/Zhihu/.tmp/Markdown-zly2006`
 - Main project checkout: `/Users/zhaoliyan/IdeaProjects/Zhihu`
 
