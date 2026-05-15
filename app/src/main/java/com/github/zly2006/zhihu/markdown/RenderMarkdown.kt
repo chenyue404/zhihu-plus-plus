@@ -66,7 +66,7 @@ import com.github.zly2006.zhihu.navigation.Video
 import com.github.zly2006.zhihu.navigation.resolveContent
 import com.github.zly2006.zhihu.theme.ThemeManager
 import com.github.zly2006.zhihu.ui.PREFERENCE_NAME
-import com.github.zly2006.zhihu.ui.components.OpenImageDislog
+import com.github.zly2006.zhihu.ui.components.OpenImageDialog
 import com.github.zly2006.zhihu.ui.subscreens.PREF_FONT_SIZE
 import com.github.zly2006.zhihu.ui.subscreens.PREF_LINE_HEIGHT
 import com.github.zly2006.zhihu.util.luoTianYiUrlLauncher
@@ -102,7 +102,7 @@ fun RenderImage(
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = {
-                            OpenImageDislog(context, httpClient, data.url).show()
+                            OpenImageDialog(context, httpClient, data.url).show()
                         },
                         onLongPress = { offset ->
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -128,7 +128,7 @@ fun RenderImage(
                     text = { Text("查看图片") },
                     onClick = {
                         expanded = false
-                        OpenImageDislog(context, httpClient, data.url).show()
+                        OpenImageDialog(context, httpClient, data.url).show()
                     },
                 )
                 DropdownMenuItem(
