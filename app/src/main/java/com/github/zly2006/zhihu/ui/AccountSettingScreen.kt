@@ -165,8 +165,7 @@ fun AccountSettingScreen(
     val data = testAccountData ?: liveData
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) { padding ->
         Column(

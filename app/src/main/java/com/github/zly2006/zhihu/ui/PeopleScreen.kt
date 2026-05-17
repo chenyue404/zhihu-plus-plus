@@ -25,9 +25,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -77,7 +75,7 @@ import com.github.zly2006.zhihu.navigation.Person
 import com.github.zly2006.zhihu.navigation.Pin
 import com.github.zly2006.zhihu.navigation.Question
 import com.github.zly2006.zhihu.ui.components.FeedCard
-import com.github.zly2006.zhihu.ui.components.OpenImageDislog
+import com.github.zly2006.zhihu.ui.components.OpenImageDialog
 import com.github.zly2006.zhihu.ui.components.PaginatedList
 import com.github.zly2006.zhihu.ui.components.ProgressIndicatorFooter
 import com.github.zly2006.zhihu.util.signFetchRequest
@@ -585,7 +583,6 @@ private fun PersonViewModel.toUiState(): PeopleScreenUiState = PeopleScreenUiSta
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PeopleScreen(
-    innerPadding: PaddingValues,
     person: Person,
     testOverrides: PeopleScreenTestOverrides? = null,
 ) {
@@ -665,7 +662,7 @@ fun PeopleScreen(
         modifier = Modifier
             .testTag(PEOPLE_SCREEN_ROOT_TAG)
             .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .padding(innerPadding),
+            .fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
@@ -740,7 +737,6 @@ fun PeopleScreen(
                 ),
                 scrollBehavior = scrollBehavior,
                 expandedHeight = 200.dp,
-                windowInsets = WindowInsets(0.dp),
             )
         },
     ) { innerPadding ->
@@ -1342,7 +1338,7 @@ private fun UserInfoHeader(
                     .size(80.dp)
                     .clip(CircleShape)
                     .clickable {
-                        OpenImageDislog(
+                        OpenImageDialog(
                             context,
                             AccountData.httpClient(context),
                             profile.avatar.substringBefore("_") + ".jpg",

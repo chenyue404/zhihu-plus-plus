@@ -18,13 +18,11 @@
 package com.github.zly2006.zhihu.markdown
 
 import android.content.Context
-import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,7 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.DropdownMenu
@@ -51,23 +49,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.github.zly2006.zhihu.data.AccountData
+import com.github.zly2006.zhihu.latex.rememberLatexFonts
 import com.github.zly2006.zhihu.navigation.LocalNavigator
 import com.github.zly2006.zhihu.navigation.Video
 import com.github.zly2006.zhihu.navigation.resolveContent
 import com.github.zly2006.zhihu.theme.ThemeManager
 import com.github.zly2006.zhihu.ui.PREFERENCE_NAME
-import com.github.zly2006.zhihu.ui.components.OpenImageDislog
+import com.github.zly2006.zhihu.ui.components.OpenImageDialog
 import com.github.zly2006.zhihu.ui.subscreens.PREF_FONT_SIZE
 import com.github.zly2006.zhihu.ui.subscreens.PREF_LINE_HEIGHT
 import com.github.zly2006.zhihu.util.luoTianYiUrlLauncher
@@ -87,9 +87,9 @@ fun RenderImage(
     var expanded by remember { mutableStateOf(false) }
     var pressOffset by remember { mutableStateOf(DpOffset.Zero) }
     val density = LocalDensity.current
-    val view = LocalView.current
     val coroutineScope = rememberCoroutineScope()
     val httpClient = AccountData.httpClient(context)
+    val hapticFeedback = LocalHapticFeedback.current
 
     Box(
         modifier = Modifier.fillMaxWidth(),
@@ -103,10 +103,10 @@ fun RenderImage(
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = {
-                            OpenImageDislog(context, httpClient, data.url).show()
+                            OpenImageDialog(context, httpClient, data.url).show()
                         },
                         onLongPress = { offset ->
-                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                             pressOffset = with(density) {
                                 DpOffset(offset.x.toDp(), offset.y.toDp() - 20.dp)
                             }
@@ -116,43 +116,48 @@ fun RenderImage(
                 },
         )
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            offset = pressOffset,
-        ) {
-            DropdownMenuItem(
-                text = { Text("查看图片") },
-                onClick = {
-                    expanded = false
-                    OpenImageDislog(context, httpClient, data.url).show()
-                },
-            )
-            DropdownMenuItem(
-                text = { Text("在浏览器中打开") },
-                onClick = {
-                    expanded = false
-                    luoTianYiUrlLauncher(context, data.url.toUri())
-                },
-            )
-            DropdownMenuItem(
-                text = { Text("保存图片") },
-                onClick = {
-                    expanded = false
-                    coroutineScope.launch {
-                        saveImageToGallery(context, httpClient, data.url)
-                    }
-                },
-            )
-            DropdownMenuItem(
-                text = { Text("分享图片") },
-                onClick = {
-                    expanded = false
-                    coroutineScope.launch {
-                        shareImage(context, httpClient, data.url)
-                    }
-                },
-            )
+        // DropdownMenu 在独立的 Popup 窗口中渲染，但其 Text 会注册到父级 SelectionRegistrar。
+        // 当文本选择上下文菜单触发 isEntireContainerSelected → sort 时，
+        // 跨窗口比较坐标会抛出 IllegalArgumentException: layouts are not part of the same hierarchy。
+        DisableSelection {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                offset = pressOffset,
+            ) {
+                DropdownMenuItem(
+                    text = { Text("查看图片") },
+                    onClick = {
+                        expanded = false
+                        OpenImageDialog(context, httpClient, data.url).show()
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text("在浏览器中打开") },
+                    onClick = {
+                        expanded = false
+                        luoTianYiUrlLauncher(context, data.url.toUri())
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text("保存图片") },
+                    onClick = {
+                        expanded = false
+                        coroutineScope.launch {
+                            saveImageToGallery(context, httpClient, data.url)
+                        }
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text("分享图片") },
+                    onClick = {
+                        expanded = false
+                        coroutineScope.launch {
+                            shareImage(context, httpClient, data.url)
+                        }
+                    },
+                )
+            }
         }
     }
 }
@@ -208,7 +213,7 @@ fun RenderMarkdown(
     html: String,
     modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(),
-    selectable: Boolean = false,
+    selectable: Boolean = true,
     enableScroll: Boolean = true,
     header: (@Composable () -> Unit)? = null,
     footer: (@Composable () -> Unit)? = null,
@@ -220,38 +225,31 @@ fun RenderMarkdown(
     val fontSize = preferences.getInt(PREF_FONT_SIZE, 100)
     val lineHeight = preferences.getInt(PREF_LINE_HEIGHT, 160)
     val defaultTheme = MarkdownTheme.auto(ThemeManager.isDarkTheme())
+
+    val fontResult = rememberLatexFonts(context, AccountData.httpClient(context))
+    val mathFont = fontResult.downloaded?.mathFont ?: defaultTheme.mathFont
+
     val theme = defaultTheme.copy(
         bodyStyle = defaultTheme.bodyStyle.copy(
             fontSize = 16.sp * fontSize / 100,
             lineHeight = 16.sp * fontSize / 100 * lineHeight / 100,
         ),
         mathFontSize = 18f * fontSize / 100,
+        mathFont = mathFont,
     )
-    val markdownBody: @Composable () -> Unit = {
-        Markdown(
-            document = document,
-            imageContent = ::RenderImage,
-            scrollState = scrollState,
-            enableScroll = enableScroll,
-            onLinkClick = { url ->
-                resolveContent(url)?.let { navigator.onNavigate(it) }
-                    ?: luoTianYiUrlLauncher(context, url.toUri())
-            },
-            header = header,
-            footer = footer,
-            theme = theme,
-        )
-    }
-
-    if (selectable) {
-        SelectionContainer(modifier = modifier) {
-            markdownBody()
-        }
-    } else {
-        Column(
-            modifier = modifier,
-        ) {
-            markdownBody()
-        }
-    }
+    Markdown(
+        document = document,
+        modifier = modifier,
+        imageContent = ::RenderImage,
+        scrollState = scrollState,
+        enableScroll = enableScroll,
+        enableSelection = selectable,
+        onLinkClick = { url ->
+            resolveContent(url)?.let { navigator.onNavigate(it) }
+                ?: luoTianYiUrlLauncher(context, url.toUri())
+        },
+        header = header,
+        footer = footer,
+        theme = theme,
+    )
 }

@@ -21,8 +21,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,14 +46,12 @@ import com.github.zly2006.zhihu.navigation.LocalNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ColorSchemeScreen(
-    innerPadding: PaddingValues,
-) {
+fun ColorSchemeScreen() {
     val navigator = LocalNavigator.current
     val cs = MaterialTheme.colorScheme
 
     Scaffold(
-        modifier = Modifier.padding(innerPadding),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text("Color Scheme") },
@@ -64,7 +60,6 @@ fun ColorSchemeScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
-                windowInsets = WindowInsets(0),
             )
         },
     ) { innerPadding ->

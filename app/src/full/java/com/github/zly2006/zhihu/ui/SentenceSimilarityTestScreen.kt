@@ -20,10 +20,8 @@ package com.github.zly2006.zhihu.ui
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -70,9 +68,7 @@ import kotlin.math.sqrt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SentenceSimilarityTestScreen(
-    innerPadding: PaddingValues,
-) {
+fun SentenceSimilarityTestScreen() {
     val navigator = LocalNavigator.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -117,7 +113,7 @@ fun SentenceSimilarityTestScreen(
     }
 
     Scaffold(
-        modifier = Modifier.padding(innerPadding),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
@@ -182,7 +178,6 @@ fun SentenceSimilarityTestScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
-                windowInsets = WindowInsets(0.dp),
             )
         },
     ) { paddingValues ->
