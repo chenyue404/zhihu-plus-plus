@@ -412,8 +412,7 @@ class ArticleViewModel(
                                 context = context,
                                 destination = article,
                                 questionId = answer.question.id,
-                                openFrom = (context as? MainActivity)?.consumePendingContentOpenFrom(article)
-                                    ?: ContentOpenFrom.UNKNOWN,
+                                openFrom = context.consumePendingContentOpenFrom(article),
                             )
                             // 设置问题回答导航器（如果当前不是收藏夹导航器）
                             if (sharedData.navigator !is CollectionAnswerNavigator) {

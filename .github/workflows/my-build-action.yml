@@ -75,7 +75,6 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             ./rs-hf-tokenizer/target/
-            ./apk-recompress/target/
           key: rust-cache-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
           restore-keys: |
             rust-cache-
