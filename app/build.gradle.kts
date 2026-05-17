@@ -188,8 +188,8 @@ tasks.withType<Test>().configureEach {
     )
 }
 
-val ktor = "3.4.1"
-val coil = "3.5.0"
+val ktor = "3.5.0"
+val coil = "3.4.0"
 val aboutLibraries = "14.0.1"
 val composeVersion = "1.11.0"
 val lifecycleVersion = "2.10.0"
