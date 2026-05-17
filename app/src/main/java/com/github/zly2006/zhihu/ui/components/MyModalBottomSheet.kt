@@ -20,6 +20,7 @@
 
 package com.github.zly2006.zhihu.ui.components
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
@@ -27,9 +28,10 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.material3.BottomSheet
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.BottomSheetImpl
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheetDialog
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Scrim
@@ -37,6 +39,8 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.SheetWindowInsets
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.internal.PredictiveBack
+import androidx.compose.material3.internal.PredictiveBackHandler
 import androidx.compose.material3.internal.Strings
 import androidx.compose.material3.internal.getString
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -44,6 +48,7 @@ import androidx.compose.material3.tokens.MotionSchemeKeyTokens
 import androidx.compose.material3.value
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -56,6 +61,7 @@ import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 @Composable
@@ -104,11 +110,11 @@ fun MyModalBottomSheet(
                 derivedStateOf { sheetState.targetValue != Hidden }
             }
             val scrimAlpha by
-            animateFloatAsState(
-                targetValue = if (isScrimVisible) 1f else 0f,
-                animationSpec = MotionSchemeKeyTokens.DefaultEffects.value(),
-                label = "ScrimAlphaAnimation",
-            )
+                animateFloatAsState(
+                    targetValue = if (isScrimVisible) 1f else 0f,
+                    animationSpec = MotionSchemeKeyTokens.DefaultEffects.value(),
+                    label = "ScrimAlphaAnimation",
+                )
             Scrim(
                 contentDescription = getString(Strings.CloseSheet),
                 onClick = if (properties.shouldDismissOnClickOutside) animateToDismiss else null,
@@ -135,4 +141,70 @@ fun MyModalBottomSheet(
     if (sheetState.hasExpandedState) {
         LaunchedEffect(sheetState) { sheetState.show() }
     }
+}
+
+@Composable
+@ExperimentalMaterial3Api
+fun BottomSheet(
+    modifier: Modifier = Modifier,
+    state: SheetState = rememberModalBottomSheetState(),
+    onDismissRequest: () -> Unit = {},
+    maxWidth: Dp = BottomSheetDefaults.SheetMaxWidth,
+    gesturesEnabled: Boolean = true,
+    backHandlerEnabled: Boolean = true,
+    dragHandle: @Composable (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
+    contentWindowInsets: @Composable () -> WindowInsets = {
+        BottomSheetDefaults.standardWindowInsets
+    },
+    shape: Shape = BottomSheetDefaults.ExpandedShape,
+    containerColor: Color = BottomSheetDefaults.ContainerColor,
+    contentColor: Color = contentColorFor(containerColor),
+    tonalElevation: Dp = BottomSheetDefaults.Elevation,
+    shadowElevation: Dp = 0.dp,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    val showMotion = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
+    val hideMotion = MaterialTheme.motionScheme.fastEffectsSpec<Float>()
+    val anchoredDraggableMotion = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
+    SideEffect {
+        state.showMotionSpec = showMotion
+        state.hideMotionSpec = hideMotion
+        state.anchoredDraggableMotionSpec = anchoredDraggableMotion
+    }
+
+    val predictiveBackProgress = remember { Animatable(initialValue = 0f) }
+    val scope = rememberCoroutineScope()
+    val settleToDismiss: () -> Unit = {
+        // Hack here by zly2006: press back button only once to dismiss.
+        scope
+            .launch { state.hide() }
+            .invokeOnCompletion { if (!state.isVisible) onDismissRequest() }
+    }
+
+    PredictiveBackHandler(enabled = backHandlerEnabled && state.isVisible) { progress ->
+        try {
+            progress.collect { backEvent ->
+                predictiveBackProgress.snapTo(PredictiveBack.transform(backEvent.progress))
+            }
+            settleToDismiss()
+        } catch (_: CancellationException) {
+            predictiveBackProgress.animateTo(0f)
+        }
+    }
+    BottomSheetImpl(
+        predictiveBackProgress = predictiveBackProgress.value,
+        modifier = modifier,
+        state = state,
+        onDismissRequest = onDismissRequest,
+        maxWidth = maxWidth,
+        gesturesEnabled = gesturesEnabled,
+        shape = shape,
+        containerColor = containerColor,
+        contentColor = contentColor,
+        tonalElevation = tonalElevation,
+        shadowElevation = shadowElevation,
+        dragHandle = dragHandle,
+        contentWindowInsets = contentWindowInsets,
+        content = content,
+    )
 }
